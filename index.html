@@ -20,15 +20,10 @@
             100% { background-position: 0% 0%; }
         }
         header, section, footer {
-            transition: background 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
             background: rgba(26, 13, 46, 0.85);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
         header { background: linear-gradient(to right, rgba(26, 13, 46, 0.9), rgba(46, 26, 78, 0.9)); }
-        #home { background: linear-gradient(to right, rgba(46, 26, 78, 0.9), rgba(78, 42, 110, 0.9)); }
-        #projects { background: linear-gradient(to right, rgba(78, 42, 110, 0.9), rgba(58, 26, 78, 0.9)); }
-        #about { background: linear-gradient(to right, rgba(58, 26, 78, 0.9), rgba(46, 26, 78, 0.9)); }
-        #contact { background: linear-gradient(to right, rgba(46, 26, 78, 0.9), rgba(26, 13, 46, 0.9)); }
-        footer { background: linear-gradient(to right, rgba(26, 13, 46, 0.9), rgba(46, 26, 78, 0.9)); }
         .highlight {
             background: linear-gradient(to right, #ffffff, #a0a0ff);
             -webkit-background-clip: text;
@@ -36,7 +31,9 @@
             color: transparent;
             transition: background 0.3s ease;
         }
-        .highlight:hover { background: linear-gradient(to right, #a0a0ff, #ffffff); }
+        .highlight:hover {
+            background: linear-gradient(to right, #a0a0ff, #ffffff);
+        }
         .project-card {
             background: rgba(62, 42, 110, 0.9);
             border: 2px solid #ffffff;
@@ -126,7 +123,7 @@
             <!-- Main Projects -->
             <div class="mb-16 text-center">
                 <h3 class="text-3xl font-semibold mb-8 highlight">Main Projects</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
                     <div class="project-card">
                         <h4 class="text-2xl mb-4">BlissOS</h4>
                         <p class="mb-4">A revolutionary software OS for ultimate privacy, built with non-Linux inspirations.</p>
@@ -139,7 +136,7 @@
                     </div>
                     <div class="project-card">
                         <h4 class="text-2xl mb-4">Gamma</h4>
-                        <p>A innovative software project in development.</p>
+                        <p class="mb-4">An innovative software project in development.</p>
                         <p><a href="#" class="text-a0a0ff hover:underline">Repo coming soon</a></p>
                     </div>
                 </div>
@@ -194,7 +191,6 @@
                         <p>A gaming-focused software OS branch with an AI assistant.</p>
                         <p><a href="#" class="text-a0a0ff hover:underline">Repo coming soon</a></p>
                     </div>
-            
                 </div>
             </div>
             <!-- Fun Bonus -->
