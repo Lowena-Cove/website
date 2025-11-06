@@ -768,8 +768,12 @@
         // Mouse-tracking carousel rotation
         document.querySelectorAll('.carousel-container').forEach(container => {
             const carousel = container.querySelector('.carousel');
+            if (!carousel) return; // Safety check
+            
             const items = carousel.querySelectorAll('.carousel-item');
             const itemCount = items.length;
+            if (itemCount === 0) return; // Safety check for empty carousel
+            
             let currentRotation = 0;
             let targetRotation = 0;
             let isHovering = false;
