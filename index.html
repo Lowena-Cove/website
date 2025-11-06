@@ -66,7 +66,7 @@
             z-index: -1;
         }
         
-        /* Abstract background shapes */
+        /* Abstract background shapes - simplified to remove artifacts */
         body::after {
             content: '';
             position: fixed;
@@ -75,24 +75,16 @@
             right: 0;
             bottom: 0;
             background-image: 
-                /* Floating circles */
-                radial-gradient(circle at 15% 40%, rgba(0, 255, 150, 0.1) 0%, transparent 3%),
-                radial-gradient(circle at 85% 60%, rgba(255, 100, 255, 0.1) 0%, transparent 4%),
-                radial-gradient(circle at 50% 15%, rgba(100, 200, 255, 0.08) 0%, transparent 5%),
-                radial-gradient(circle at 25% 85%, rgba(255, 255, 0, 0.06) 0%, transparent 6%),
-                radial-gradient(circle at 75% 25%, rgba(0, 255, 255, 0.08) 0%, transparent 4%),
-                /* Diamond shapes using conic gradients */
-                conic-gradient(from 45deg at 20% 30%, rgba(255, 0, 128, 0.08) 0deg, transparent 90deg, rgba(255, 0, 128, 0.08) 180deg, transparent 270deg),
-                conic-gradient(from 45deg at 80% 70%, rgba(128, 255, 0, 0.06) 0deg, transparent 90deg, rgba(128, 255, 0, 0.06) 180deg, transparent 270deg),
-                /* Square shapes */
-                linear-gradient(45deg, rgba(255, 128, 0, 0.05) 0%, transparent 50%),
-                linear-gradient(-45deg, rgba(0, 128, 255, 0.05) 0%, transparent 50%);
+                /* Subtle floating circles only */
+                radial-gradient(circle at 15% 40%, rgba(0, 255, 150, 0.08) 0%, transparent 5%),
+                radial-gradient(circle at 85% 60%, rgba(255, 100, 255, 0.08) 0%, transparent 6%),
+                radial-gradient(circle at 50% 15%, rgba(100, 200, 255, 0.06) 0%, transparent 7%),
+                radial-gradient(circle at 25% 85%, rgba(255, 255, 0, 0.05) 0%, transparent 8%),
+                radial-gradient(circle at 75% 25%, rgba(0, 255, 255, 0.06) 0%, transparent 6%);
             background-size: 
-                200px 200px, 150px 150px, 300px 300px, 180px 180px, 220px 220px,
-                100px 100px, 120px 120px, 80px 80px, 90px 90px;
+                250px 250px, 200px 200px, 350px 350px, 220px 220px, 270px 270px;
             background-position: 
-                15% 40%, 85% 60%, 50% 15%, 25% 85%, 75% 25%,
-                20% 30%, 80% 70%, 60% 80%, 40% 20%;
+                15% 40%, 85% 60%, 50% 15%, 25% 85%, 75% 25%;
             background-repeat: no-repeat;
             pointer-events: none;
             z-index: -1;
@@ -100,10 +92,10 @@
         }
         
         @keyframes floatShapes {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-10px) rotate(1deg); }
-            50% { transform: translateY(-5px) rotate(-1deg); }
-            75% { transform: translateY(-15px) rotate(0.5deg); }
+            0%, 100% { transform: translateY(0px); }
+            25% { transform: translateY(-8px); }
+            50% { transform: translateY(-4px); }
+            75% { transform: translateY(-12px); }
         }
         
         /* 3D Carousel Styles */
@@ -773,16 +765,112 @@
             }
         }
 
-        // Pause carousels on hover
+        // Mouse-tracking carousel rotation
         document.querySelectorAll('.carousel-container').forEach(container => {
             const carousel = container.querySelector('.carousel');
+            const items = carousel.querySelectorAll('.carousel-item');
+            const itemCount = items.length;
+            let currentRotation = 0;
+            let targetRotation = 0;
+            let isHovering = false;
+            let animationFrame = null;
+            
+            // Calculate angle between items
+            const anglePerItem = 360 / itemCount;
             
             container.addEventListener('mouseenter', () => {
+                isHovering = true;
                 carousel.classList.add('paused');
             });
             
             container.addEventListener('mouseleave', () => {
+                isHovering = false;
                 carousel.classList.remove('paused');
+            });
+            
+            container.addEventListener('mousemove', (e) => {
+                if (!isHovering) return;
+                
+                // Get container center
+                const rect = container.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // Calculate angle from center to mouse
+                const dx = e.clientX - centerX;
+                const dy = e.clientY - centerY;
+                let mouseAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+                
+                // Normalize angle to 0-360
+                mouseAngle = (mouseAngle + 360) % 360;
+                
+                // Find nearest item
+                let nearestItemIndex = 0;
+                let minAngleDiff = 360;
+                
+                for (let i = 0; i < itemCount; i++) {
+                    const itemAngle = (i * anglePerItem) % 360;
+                    let angleDiff = Math.abs(mouseAngle - itemAngle);
+                    
+                    // Handle wrap-around
+                    if (angleDiff > 180) {
+                        angleDiff = 360 - angleDiff;
+                    }
+                    
+                    if (angleDiff < minAngleDiff) {
+                        minAngleDiff = angleDiff;
+                        nearestItemIndex = i;
+                    }
+                }
+                
+                // Calculate target rotation to bring nearest item to front
+                targetRotation = -nearestItemIndex * anglePerItem;
+            });
+            
+            // Smooth animation loop
+            function animateCarousel() {
+                if (!isHovering) {
+                    animationFrame = null;
+                    return;
+                }
+                
+                // Smooth lerp towards target rotation
+                const diff = targetRotation - currentRotation;
+                
+                // Handle wrap-around for shortest path
+                let adjustedDiff = diff;
+                if (Math.abs(diff) > 180) {
+                    adjustedDiff = diff > 0 ? diff - 360 : diff + 360;
+                }
+                
+                currentRotation += adjustedDiff * 0.15; // Smooth interpolation factor
+                
+                // Apply rotation
+                carousel.style.transform = `rotateY(${currentRotation}deg)`;
+                
+                animationFrame = requestAnimationFrame(animateCarousel);
+            }
+            
+            // Start animation when hovering
+            container.addEventListener('mouseenter', () => {
+                if (!animationFrame) {
+                    // Get current rotation from animation
+                    const computedStyle = window.getComputedStyle(carousel);
+                    const matrix = computedStyle.transform;
+                    
+                    if (matrix && matrix !== 'none') {
+                        // Parse the matrix to get current rotation
+                        const values = matrix.split('(')[1].split(')')[0].split(',');
+                        if (values.length === 16) {
+                            // 3D matrix
+                            const m11 = parseFloat(values[0]);
+                            const m13 = parseFloat(values[2]);
+                            currentRotation = Math.atan2(m13, m11) * (180 / Math.PI);
+                        }
+                    }
+                    
+                    animateCarousel();
+                }
             });
         });
     </script>
