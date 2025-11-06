@@ -778,9 +778,56 @@
             // Calculate angle between items
             const anglePerItem = 360 / itemCount;
             
+            // Smooth animation loop
+            function animateCarousel() {
+                if (!isHovering) {
+                    animationFrame = null;
+                    return;
+                }
+                
+                // Smooth lerp towards target rotation
+                const diff = targetRotation - currentRotation;
+                
+                // Handle wrap-around for shortest path
+                let adjustedDiff = diff;
+                if (Math.abs(diff) > 180) {
+                    adjustedDiff = diff > 0 ? diff - 360 : diff + 360;
+                }
+                
+                currentRotation += adjustedDiff * 0.15; // Smooth interpolation factor
+                
+                // Apply rotation
+                carousel.style.transform = `rotateY(${currentRotation}deg)`;
+                
+                animationFrame = requestAnimationFrame(animateCarousel);
+            }
+            
             container.addEventListener('mouseenter', () => {
                 isHovering = true;
                 carousel.classList.add('paused');
+                
+                if (!animationFrame) {
+                    // Get current rotation from animation
+                    const computedStyle = window.getComputedStyle(carousel);
+                    const matrix = computedStyle.transform;
+                    
+                    if (matrix && matrix !== 'none') {
+                        // Parse the matrix to get current rotation
+                        const parts = matrix.match(/matrix3d\(([^)]+)\)/);
+                        if (parts && parts[1]) {
+                            const values = parts[1].split(',').map(v => parseFloat(v.trim()));
+                            if (values.length === 16) {
+                                // Extract rotateY angle from 3D matrix
+                                // For rotateY: m11 = cos(angle), m31 = -sin(angle)
+                                const m11 = values[0];
+                                const m31 = values[8];
+                                currentRotation = Math.atan2(-m31, m11) * (180 / Math.PI);
+                            }
+                        }
+                    }
+                    
+                    animateCarousel();
+                }
             });
             
             container.addEventListener('mouseleave', () => {
@@ -825,52 +872,6 @@
                 
                 // Calculate target rotation to bring nearest item to front
                 targetRotation = -nearestItemIndex * anglePerItem;
-            });
-            
-            // Smooth animation loop
-            function animateCarousel() {
-                if (!isHovering) {
-                    animationFrame = null;
-                    return;
-                }
-                
-                // Smooth lerp towards target rotation
-                const diff = targetRotation - currentRotation;
-                
-                // Handle wrap-around for shortest path
-                let adjustedDiff = diff;
-                if (Math.abs(diff) > 180) {
-                    adjustedDiff = diff > 0 ? diff - 360 : diff + 360;
-                }
-                
-                currentRotation += adjustedDiff * 0.15; // Smooth interpolation factor
-                
-                // Apply rotation
-                carousel.style.transform = `rotateY(${currentRotation}deg)`;
-                
-                animationFrame = requestAnimationFrame(animateCarousel);
-            }
-            
-            // Start animation when hovering
-            container.addEventListener('mouseenter', () => {
-                if (!animationFrame) {
-                    // Get current rotation from animation
-                    const computedStyle = window.getComputedStyle(carousel);
-                    const matrix = computedStyle.transform;
-                    
-                    if (matrix && matrix !== 'none') {
-                        // Parse the matrix to get current rotation
-                        const values = matrix.split('(')[1].split(')')[0].split(',');
-                        if (values.length === 16) {
-                            // 3D matrix
-                            const m11 = parseFloat(values[0]);
-                            const m13 = parseFloat(values[2]);
-                            currentRotation = Math.atan2(m13, m11) * (180 / Math.PI);
-                        }
-                    }
-                    
-                    animateCarousel();
-                }
             });
         });
     </script>
