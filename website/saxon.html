@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saxon AI - Lowena Cove</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Import Inter font for consistent typography */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, 
+                rgba(0, 100, 0, 0.9) 0%,      /* Green */
+                rgba(0, 100, 200, 0.85) 16%,  /* Blue */
+                rgba(128, 128, 128, 0.8) 32%, /* Grey */
+                rgba(0, 0, 0, 0.9) 48%,       /* Black */
+                rgba(128, 0, 128, 0.85) 64%,  /* Purple */
+                rgba(255, 255, 255, 0.7) 80%, /* White */
+                rgba(0, 100, 0, 0.75) 100%);  /* Green again for smooth loop */
+            background-size: 400% 400%;
+            background-attachment: fixed;
+            animation: gradientShift 25s ease-in-out infinite;
+            will-change: background-position;
+            color: rgba(255, 255, 255, 0.9);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        @keyframes gradientShift {
+            0% { 
+                background-position: 0% 50%;
+            }
+            25% { 
+                background-position: 100% 50%;
+            }
+            50% { 
+                background-position: 100% 100%;
+            }
+            75% { 
+                background-position: 0% 100%;
+            }
+            100% { 
+                background-position: 0% 50%;
+            }
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Glass morphism base */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Header glass styling */
+        header {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Logo container */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-square {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 0.75rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .logo-square:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .logo {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+        }
+        
+        /* Navigation */
+        nav ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+        }
+        
+        nav ul li a:hover {
+            color: rgba(255, 255, 255, 1);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        /* Content card styling */
+        .content-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+        }
+        
+        .content-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                0 8px 16px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+        
+        /* Buttons with liquid glass effect */
+        .button {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent);
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .button:hover::before {
+            left: 100%;
+        }
+        
+        .button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            color: rgba(255, 255, 255, 1);
+        }
+        
+        /* Section styling */
+        section {
+            position: relative;
+        }
+        
+        .section-transition {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .section-transition.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Typography improvements */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 1) 0%, 
+                rgba(255, 255, 255, 0.8) 50%, 
+                rgba(120, 219, 255, 0.9) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 2.5rem;
+        }
+        
+        /* Feature grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-item h4 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .feature-item p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+        
+        /* Links */
+        a.text-link {
+            color: rgba(120, 219, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        a.text-link:hover {
+            color: rgba(120, 219, 255, 1);
+            text-shadow: 0 0 8px rgba(120, 219, 255, 0.3);
+        }
+        
+        /* Footer glass styling */
+        footer {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .logo-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="py-6 sticky top-0 z-50">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="logo-container">
+                <div class="logo-square">
+                    <a href="https://github.com/Lowena-Cove" target="_blank" class="logo">
+                        <img src="https://avatars.githubusercontent.com/u/183483231?s=400&u=4335600c76d213fca28a2c750000245dc973f58e&v=4" alt="Lowena Cove Logo" class="h-16">
+                    </a>
+                </div>
+                <span class="text-2xl font-bold">Lowena Cove</span>
+            </div>
+            <nav>
+                <ul class="flex space-x-8 text-xl">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../index.html#projects">Projects</a></li>
+                    <li><a href="../index.html#about">About</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center section-transition visible" data-section>
+        <div class="container mx-auto px-6 py-24">
+            <div class="text-center max-w-4xl mx-auto mb-12">
+                <h1 class="hero-title">SAXON AI</h1>
+                <p class="hero-subtitle">An advanced AI system pushing the boundaries of intelligent systems and language models.</p>
+                <div class="flex gap-4 justify-center flex-wrap">
+                    <a href="https://huggingface.co/organizations/SAXON-AI/" target="_blank" class="button">View on Hugging Face</a>
+                    <a href="https://huggingface.co/SAXON-AI" target="_blank" class="button">Explore Models</a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="max-w-5xl mx-auto">
+                <div class="content-card">
+                    <h2 class="text-3xl font-bold mb-4">About Saxon AI</h2>
+                    <p class="text-lg mb-4 leading-relaxed">
+                        Saxon AI is a cutting-edge artificial intelligence project developed by Lowena Cove, 
+                        focused on creating powerful and innovative language models. Our work pushes the 
+                        boundaries of what's possible in AI, with a commitment to open-source development 
+                        and community collaboration.
+                    </p>
+                    <p class="text-lg leading-relaxed">
+                        The Saxon AI project hosts a collection of models and tools on Hugging Face, 
+                        contributing to the advancement of artificial intelligence technology and making 
+                        sophisticated AI capabilities accessible to developers and researchers worldwide.
+                    </p>
+                </div>
+
+                <div class="content-card">
+                    <h2 class="text-3xl font-bold mb-6">Key Features</h2>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <h4>🚀 Advanced Models</h4>
+                            <p>State-of-the-art language models designed for performance and efficiency.</p>
+                        </div>
+                        <div class="feature-item">
+                            <h4>🌐 Open Source</h4>
+                            <p>Committed to open-source development and community collaboration.</p>
+                        </div>
+                        <div class="feature-item">
+                            <h4>🔧 Developer Friendly</h4>
+                            <p>Easy-to-use APIs and comprehensive documentation for seamless integration.</p>
+                        </div>
+                        <div class="feature-item">
+                            <h4>🎯 Cutting Edge</h4>
+                            <p>Continuously evolving with the latest advancements in AI research.</p>
+                        </div>
+                        <div class="feature-item">
+                            <h4>🤝 Community Driven</h4>
+                            <p>Built with feedback and contributions from the AI community.</p>
+                        </div>
+                        <div class="feature-item">
+                            <h4>⚡ High Performance</h4>
+                            <p>Optimized for speed and efficiency across various use cases.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2 class="text-3xl font-bold mb-4">Get Started</h2>
+                    <p class="text-lg mb-4 leading-relaxed">
+                        Visit our <a href="https://huggingface.co/organizations/SAXON-AI/" target="_blank" class="text-link">Hugging Face organization</a> 
+                        to explore our models, access documentation, and join our growing community of developers 
+                        and AI enthusiasts.
+                    </p>
+                    <p class="text-lg leading-relaxed">
+                        Whether you're building applications, conducting research, or just exploring the 
+                        possibilities of AI, Saxon AI provides the tools and resources you need to succeed.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>© 2025 Lowena Cove. All rights reserved.</p>
+            <p class="mt-2">
+                <a href="../index.html" class="hover:underline">Back to Home</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Header scroll effect
+        let lastScrollTop = 0;
+        const header = document.querySelector('header');
+        
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                // Scrolling down
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                // Scrolling up
+                header.style.transform = 'translateY(0)';
+            }
+            
+            // Add blur effect based on scroll
+            const blurAmount = Math.min(scrollTop / 10, 40);
+            header.style.backdropFilter = `blur(${blurAmount}px)`;
+            header.style.webkitBackdropFilter = `blur(${blurAmount}px)`;
+            
+            lastScrollTop = scrollTop;
+        });
+    </script>
+</body>
+</html>
